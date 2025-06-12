@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contact - Tiffin Time Trolls</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Contact Us</h1>
+  <form onsubmit="submitForm(event)">
+    <input id="contactName" placeholder="Your name" />
+    <button type="submit">Submit</button>
+  </form>
+  <a href="index.html">Home</a>
+  <script>
+    async function submitForm(e) {
+      e.preventDefault();
+      const name = document.getElementById("contactName").value;
+      const res = await fetch("http://localhost:5050/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      alert(data.message);
+    }
+  </script>
+</body>
+</html>
