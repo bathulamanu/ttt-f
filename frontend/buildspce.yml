@@ -3,11 +3,10 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo Logging into Amazon ECR...
-      - aws --version
-      - export ACCOUNT_ID=403135539729
-      - export REGION=us-east-1
+      - echo Logging in to Amazon ECR...
       - export IMAGE_NAME=ttt
+      - export REGION=us-east-1
+      - export ACCOUNT_ID=403135539729
       - export REPO_URI=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$IMAGE_NAME
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
 
@@ -22,7 +21,7 @@ phases:
       - echo Pushing Docker image to ECR...
       - docker push $REPO_URI:latest
 
-      - echo Creating CodeDeploy deployment bundle...
+      - echo Creating CodeDeploy bundle...
       - mkdir -p codedeploy/scripts
       - cp appspec.yml codedeploy/
       - cp scripts/deploy.sh codedeploy/scripts/
