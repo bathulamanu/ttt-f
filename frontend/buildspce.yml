@@ -4,11 +4,11 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - export IMAGE_NAME=ttt
       - export REGION=us-east-1
-      - export ACCOUNT_ID=403135539729
-      - export REPO_URI=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$IMAGE_NAME
-      - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
+      - export IMAGE_NAME=ttt
+      - export REGISTRY=403135539729.dkr.ecr.$REGION.amazonaws.com
+      - export REPO_URI=$REGISTRY/$IMAGE_NAME
+      - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REGISTRY
 
   build:
     commands:
@@ -20,7 +20,6 @@ phases:
     commands:
       - echo Pushing Docker image to ECR...
       - docker push $REPO_URI:latest
-
       - echo Creating CodeDeploy bundle...
       - mkdir -p codedeploy/scripts
       - cp appspec.yml codedeploy/
