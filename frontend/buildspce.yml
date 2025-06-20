@@ -11,23 +11,23 @@ env:
 phases:
   pre_build:
     commands:
-      - echo "Logging in to ECR..."
+      - echo "🔐 Logging into ECR..."
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REGISTRY
 
   build:
     commands:
-      - echo "Building backend and frontend Docker images..."
+      - echo "⚙️ Building backend and frontend Docker images..."
       - docker compose build
       - docker tag $BACKEND_IMAGE:latest $REGISTRY/$BACKEND_IMAGE:latest
       - docker tag $FRONTEND_IMAGE:latest $REGISTRY/$FRONTEND_IMAGE:latest
 
   post_build:
     commands:
-      - echo "Pushing images to ECR..."
+      - echo "📤 Pushing Docker images to ECR..."
       - docker push $REGISTRY/$BACKEND_IMAGE:latest
       - docker push $REGISTRY/$FRONTEND_IMAGE:latest
 
-      - echo "Preparing deployment artifacts..."
+      - echo "📁 Zipping for CodeDeploy..."
       - mkdir -p codedeploy/scripts
       - cp appspec.yml codedeploy/
       - cp scripts/deploy.sh codedeploy/scripts/
@@ -37,4 +37,3 @@ phases:
 artifacts:
   files:
     - build.zip
-
