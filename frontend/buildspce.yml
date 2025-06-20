@@ -5,29 +5,28 @@ env:
     REGION: us-east-1
     ACCOUNT_ID: 403135539729
     REGISTRY: 403135539729.dkr.ecr.us-east-1.amazonaws.com
-    FRONTEND_IMAGE: ttt-frontend
     BACKEND_IMAGE: ttt-backend
+    FRONTEND_IMAGE: ttt-frontend
 
 phases:
   pre_build:
     commands:
-      - echo "🔐 Logging into ECR..."
+      - echo "🔐 Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REGISTRY
+      - echo "✅ Login complete"
 
   build:
     commands:
-      - echo "⚙️ Building backend and frontend Docker images..."
+      - echo "🛠️ Building Docker images with Compose..."
       - docker compose build
-      - docker tag $BACKEND_IMAGE:latest $REGISTRY/$BACKEND_IMAGE:latest
-      - docker tag $FRONTEND_IMAGE:latest $REGISTRY/$FRONTEND_IMAGE:latest
 
   post_build:
     commands:
-      - echo "📤 Pushing Docker images to ECR..."
+      - echo "📤 Pushing images to ECR..."
       - docker push $REGISTRY/$BACKEND_IMAGE:latest
       - docker push $REGISTRY/$FRONTEND_IMAGE:latest
 
-      - echo "📁 Zipping for CodeDeploy..."
+      - echo "📦 Creating CodeDeploy bundle..."
       - mkdir -p codedeploy/scripts
       - cp appspec.yml codedeploy/
       - cp scripts/deploy.sh codedeploy/scripts/
