@@ -1,15 +1,15 @@
-version: '3.3'
+version: '3.8'
 
 services:
   backend:
     build: ./backend
+    image: 403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt-backend:latest
     ports:
       - "5050:5000"
 
   frontend:
-    image: nginx:alpine
-    volumes:
-      - ./frontend:/usr/share/nginx/html:ro
+    build: ./frontend
+    image: 403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt-frontend:latest
     ports:
       - "8088:80"
     depends_on:
