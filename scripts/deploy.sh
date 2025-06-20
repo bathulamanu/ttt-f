@@ -1,18 +1,14 @@
 #!/bin/bash
 
-APP_NAME="ttt-app"
-ECR_REPO="403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt"
-PORT=3000
+cd /home/ubuntu/ttt-app
 
-echo "Stopping existing container..."
-docker stop $APP_NAME || true
-docker rm $APP_NAME || true
+# Login to ECR
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 403135539729.dkr.ecr.us-east-1.amazonaws.com
 
-echo "Logging in to ECR..."
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
+# Pull latest images
+docker pull 403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt-backend:latest
+docker pull 403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt-frontend:latest
 
-echo "Pulling latest image..."
-docker pull $ECR_REPO:latest
-
-echo "Starting new container..."
-docker run -d --name $APP_NAME -p $PORT:3000 $ECR_REPO:latest
+# Run containers
+docker compose down || true
+docker compose up -d
