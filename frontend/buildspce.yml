@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging into Amazon ECR...
+      - aws --version
+      - REPO_URI=403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO_URI
+  build:
+    commands:
+      - echo Building Docker image...
+      - docker build -t ttt .
+      - docker tag ttt:latest $REPO_URI:latest
+  post_build:
+    commands:
+      - echo Pushing Docker image to ECR...
+      - docker push $REPO_URI:latest
+      - echo Creating CodeDeploy deployment bundle...
+      - mkdir -p codedeploy/scripts
+      - cp appspec.yml codedeploy/
+      - cp scripts/deploy.sh codedeploy/scripts/
+      - cd codedeploy
+      - zip -r ../build.zip ./
+artifacts:
+  files:
+    - build.zip
