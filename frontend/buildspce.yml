@@ -1,26 +1,33 @@
 version: 0.2
 
+env:
+  variables:
+    REGION: us-east-1
+    IMAGE_NAME: ttt
+    ACCOUNT_ID: 403135539729
+    REGISTRY: 403135539729.dkr.ecr.us-east-1.amazonaws.com
+    REPO_URI: 403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt
+
 phases:
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
-      - export REGION=us-east-1
-      - export IMAGE_NAME=ttt
-      - export REGISTRY=403135539729.dkr.ecr.$REGION.amazonaws.com
-      - export REPO_URI=$REGISTRY/$IMAGE_NAME
+      - echo "🔐 Logging into Amazon ECR..."
+      - aws --version
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REGISTRY
 
   build:
     commands:
-      - echo Building Docker image...
+      - echo "🐳 Building Docker image..."
       - docker build -t $IMAGE_NAME .
+      - echo "🏷️ Tagging image..."
       - docker tag $IMAGE_NAME:latest $REPO_URI:latest
 
   post_build:
     commands:
-      - echo Pushing Docker image to ECR...
+      - echo "📦 Pushing image to ECR..."
       - docker push $REPO_URI:latest
-      - echo Creating CodeDeploy bundle...
+
+      - echo "📁 Creating CodeDeploy deployment bundle..."
       - mkdir -p codedeploy/scripts
       - cp appspec.yml codedeploy/
       - cp scripts/deploy.sh codedeploy/scripts/
