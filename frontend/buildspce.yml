@@ -5,14 +5,17 @@ phases:
     commands:
       - echo Logging into Amazon ECR...
       - aws --version
-      - export REPO_URI=403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPO_URI
+      - export ACCOUNT_ID=403135539729
+      - export REGION=us-east-1
+      - export IMAGE_NAME=ttt
+      - export REPO_URI=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$IMAGE_NAME
+      - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
 
   build:
     commands:
       - echo Building Docker image...
-      - docker build -t ttt .
-      - docker tag ttt:latest $REPO_URI:latest
+      - docker build -t $IMAGE_NAME .
+      - docker tag $IMAGE_NAME:latest $REPO_URI:latest
 
   post_build:
     commands:
