@@ -3,31 +3,31 @@ version: 0.2
 env:
   variables:
     REGION: us-east-1
-    IMAGE_NAME: ttt
     ACCOUNT_ID: 403135539729
     REGISTRY: 403135539729.dkr.ecr.us-east-1.amazonaws.com
-    REPO_URI: 403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt
+    FRONTEND_IMAGE: ttt-frontend
+    BACKEND_IMAGE: ttt-backend
 
 phases:
   pre_build:
     commands:
-      - echo "🔐 Logging into Amazon ECR..."
-      - aws --version
+      - echo "Logging in to ECR..."
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REGISTRY
 
   build:
     commands:
-      - echo "🐳 Building Docker image..."
-      - docker build -t $IMAGE_NAME .
-      - echo "🏷️ Tagging image..."
-      - docker tag $IMAGE_NAME:latest $REPO_URI:latest
+      - echo "Building backend and frontend Docker images..."
+      - docker compose build
+      - docker tag $BACKEND_IMAGE:latest $REGISTRY/$BACKEND_IMAGE:latest
+      - docker tag $FRONTEND_IMAGE:latest $REGISTRY/$FRONTEND_IMAGE:latest
 
   post_build:
     commands:
-      - echo "📦 Pushing image to ECR..."
-      - docker push $REPO_URI:latest
+      - echo "Pushing images to ECR..."
+      - docker push $REGISTRY/$BACKEND_IMAGE:latest
+      - docker push $REGISTRY/$FRONTEND_IMAGE:latest
 
-      - echo "📁 Creating CodeDeploy deployment bundle..."
+      - echo "Preparing deployment artifacts..."
       - mkdir -p codedeploy/scripts
       - cp appspec.yml codedeploy/
       - cp scripts/deploy.sh codedeploy/scripts/
@@ -37,3 +37,4 @@ phases:
 artifacts:
   files:
     - build.zip
+
