@@ -12,5 +12,3 @@ services:
     image: 403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt-frontend:latest
     ports:
       - "8088:80"
-    depends_on:
-      - backend
