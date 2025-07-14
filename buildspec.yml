@@ -5,8 +5,8 @@ env:
     REGION: us-east-1
     ACCOUNT_ID: 403135539729
     REGISTRY: 403135539729.dkr.ecr.us-east-1.amazonaws.com
-    BACKEND_IMAGE: ttt-backend
-    FRONTEND_IMAGE: ttt-frontend
+    BACKEND_IMAGE: cicd       # ✅ Backend to cicd repo
+    FRONTEND_IMAGE: ttt       # ✅ Frontend to ttt repo
 
 phases:
   pre_build:
@@ -17,8 +17,9 @@ phases:
 
   build:
     commands:
-      - echo "🛠️ Building Docker images with Compose..."
-      - docker compose build
+      - echo "🛠️ Building Docker images..."
+      - docker build -t $REGISTRY/$BACKEND_IMAGE:latest ./backend
+      - docker build -t $REGISTRY/$FRONTEND_IMAGE:latest ./frontend
 
   post_build:
     commands:
@@ -36,5 +37,3 @@ phases:
 artifacts:
   files:
     - build.zip
-
-
