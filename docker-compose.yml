@@ -3,12 +3,12 @@ version: '3.8'
 services:
   backend:
     build: ./backend
-    image: 403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt-backend:latest
+    image: 403135539729.dkr.ecr.us-east-1.amazonaws.com/cicd:backend
     ports:
       - "5050:5000"
 
   frontend:
     build: ./frontend
-    image: 403135539729.dkr.ecr.us-east-1.amazonaws.com/ttt-frontend:latest
+    image: 403135539729.dkr.ecr.us-east-1.amazonaws.com/cicd:frontend
     ports:
       - "8088:80"
