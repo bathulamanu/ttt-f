@@ -1,0 +1,27 @@
+name: Deploy to EC2 (Production)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production  # 👈 IMPORTANT: Link to your environment
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd ~/myapp || git clone https://github.com/YOUR-USERNAME/YOUR-REPO.git myapp && cd myapp
+            git pull origin main
+            npm install
+            pm2 restart all || npm start &
