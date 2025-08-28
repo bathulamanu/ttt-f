@@ -1,4 +1,4 @@
-name: Docker Compose Deployment
+name: Docker Build and Push to ECR
 
 on:
   push:
@@ -6,32 +6,35 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
-    environment: ttf   # 👈 match this with your GitHub environment name
 
     steps:
-    - name: Deploy to Ubuntu Server using Docker Compose
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.SERVER_IP }}
-        username: ubuntu
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          set -e
-          if [ -d ~/ttt-f ]; then
-            echo "📁 Repo exists. Pulling latest changes..."
-            cd ~/ttt-f
-            git reset --hard
-            git clean -fd
-            git pull origin main
-          else
-            echo "📁 Cloning repo for the first time..."
-            git clone https://github.com/bathulamanu/ttt-f.git ~/ttt-f
-            cd ~/ttt-f
-          fi
+    - name: Checkout source
+      uses: actions/checkout@v3
 
-          echo "🐳 Deploying using Docker Compose..."
-          docker compose down
-          docker compose pull
-          docker compose up -d --build
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-north-1
+
+    - name: Login to Amazon ECR
+      run: |
+        aws ecr get-login-password --region eu-north-1 \
+          | docker login --username AWS --password-stdin 463932052716.dkr.ecr.eu-north-1.amazonaws.com
+
+    # Build and Push Backend
+    - name: Build & Push Backend Image
+      run: |
+        docker build -t my-first ./backend
+        docker tag my-first:latest 463932052716.dkr.ecr.eu-north-1.amazonaws.com/my-first:latest
+        docker push 463932052716.dkr.ecr.eu-north-1.amazonaws.com/my-first:latest
+
+    # Build and Push Frontend
+    - name: Build & Push Frontend Image
+      run: |
+        docker build -t k8s ./frontend
+        docker tag k8s:latest 463932052716.dkr.ecr.eu-north-1.amazonaws.com/k8s:latest
+        docker push 463932052716.dkr.ecr.eu-north-1.amazonaws.com/k8s:latest
