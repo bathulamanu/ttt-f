@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     REGION: us-east-1
-    ACCOUNT_ID: 403135539729
+    ACCOUNT_ID: 463932052716
     REGISTRY: 463932052716.dkr.ecr.eu-north-1.amazonaws.com/my-first
     BACKEND_IMAGE: cicd       # ✅ Backend to cicd repo
     FRONTEND_IMAGE: ttt       # ✅ Frontend to ttt repo
