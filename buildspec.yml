@@ -4,9 +4,10 @@ env:
   variables:
     REGION: eu-north-1
     ACCOUNT_ID: 463932052716
-    REGISTRY: 463932052716.dkr.ecr.eu-north-1.amazonaws.com/my-first
-    BACKEND_IMAGE: my-first      # ✅ Backend to cicd repo
-    FRONTEND_IMAGE: k8s      # ✅ Frontend to ttt repo
+    REGISTRY: 463932052716.dkr.ecr.eu-north-1.amazonaws.com
+    BACKEND_IMAGE: my-first
+    FRONTEND_IMAGE: k8s
+    IMAGE_TAG: latest
 
 phases:
   pre_build:
@@ -18,22 +19,11 @@ phases:
   build:
     commands:
       - echo "🛠️ Building Docker images..."
-      - docker build -t $REGISTRY/$BACKEND_IMAGE:latest ./backend
-      - docker build -t $REGISTRY/$FRONTEND_IMAGE:latest ./frontend
+      - docker build -t $REGISTRY/$BACKEND_IMAGE:$IMAGE_TAG ./backend
+      - docker build -t $REGISTRY/$FRONTEND_IMAGE:$IMAGE_TAG ./frontend
 
   post_build:
     commands:
       - echo "📤 Pushing images to ECR..."
-      - docker push $REGISTRY/$BACKEND_IMAGE:latest
-      - docker push $REGISTRY/$FRONTEND_IMAGE:latest
-
-      - echo "📦 Creating CodeDeploy bundle..."
-      - mkdir -p codedeploy/scripts
-      - cp appspec.yml codedeploy/
-      - cp scripts/deploy.sh codedeploy/scripts/
-      - cd codedeploy
-      - zip -r ../build.zip ./
-
-artifacts:
-  files:
-    - build.zip 
+      - docker push $REGISTRY/$BACKEND_IMAGE:$IMAGE_TAG
+      - docker push $REGISTRY/$FRONTEND_IMAGE:$IMAGE_TAG
