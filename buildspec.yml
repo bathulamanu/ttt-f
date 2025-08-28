@@ -6,23 +6,30 @@ env:
     ACCOUNT_ID: 463932052716
     REGISTRY: 463932052716.dkr.ecr.eu-north-1.amazonaws.com
     BACKEND_IMAGE: my-first
-    FRONTEND_IMAGE: k8s
     IMAGE_TAG: latest
 
 phases:
   pre_build:
     commands:
-      - echo "🔐 Logging in to Amazon ECR..."
+      - echo "🔑 Logging in to Amazon ECR..."
+      - aws --version
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REGISTRY
+      - echo "✅ Logged in to ECR"
 
   build:
     commands:
-      - echo "🛠️ Building Docker images..."
-      - docker build -t $REGISTRY/$BACKEND_IMAGE:$IMAGE_TAG ./backend
-      - docker build -t $REGISTRY/$FRONTEND_IMAGE:$IMAGE_TAG ./frontend
+      - echo "🐳 Building Docker image..."
+      - docker build -t $REGISTRY/$BACKEND_IMAGE:$IMAGE_TAG .
+      - echo "✅ Docker build complete"
 
   post_build:
     commands:
-      - echo "📤 Pushing images to ECR..."
+      - echo "📤 Pushing Docker image to ECR..."
+      - echo "DEBUG => $REGISTRY/$BACKEND_IMAGE:$IMAGE_TAG"
       - docker push $REGISTRY/$BACKEND_IMAGE:$IMAGE_TAG
-      - docker push $REGISTRY/$FRONTEND_IMAGE:$IMAGE_TAG
+      - echo "✅ Image pushed successfully"
+
+artifacts:
+  files:
+    - '**/*'
+
