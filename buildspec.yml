@@ -14,7 +14,6 @@ phases:
     commands:
       - echo "🔐 Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REGISTRY
-      - echo "✅ Login complete"
 
   build:
     commands:
