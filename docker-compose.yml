@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   backend:
-    build: ./backend          # Path to your backend Dockerfile
+    build: ./backend
     image: 378766468379.dkr.ecr.eu-north-1.amazonaws.com/my-first-backend:latest
     ports:
       - "5050:5000"
 
   frontend:
-    build: ./frontend         # Path to your frontend Dockerfile
+    build: ./frontend
     image: 378766468379.dkr.ecr.eu-north-1.amazonaws.com/my-first-frontend:latest
     ports:
       - "8088:80"
