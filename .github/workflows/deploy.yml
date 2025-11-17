@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-push:m
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,14 +16,14 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: AKIAWYBEBKTWP5GFYDPH
-        aws-secret-access-key: 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
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-north-1
 
     - name: Login to Amazon ECR
       run: |
         aws ecr get-login-password --region eu-north-1 \
-          | docker login --username AWS --password-stdin 463932052716.dkr.ecr.eu-north-1.amazonaws.com
+        | docker login --username AWS --password-stdin 463932052716.dkr.ecr.eu-north-1.amazonaws.com
 
     # Build and Push Backend
     - name: Build & Push Backend Image
